@@ -25,7 +25,7 @@ Chequeos: `npm run lint`, `npm run typecheck`, `npm run build`.
 ## Fases
 
 1. ✅ Esqueleto Next.js + esquema Supabase + Vercel
-2. ⬜ Vista del alumno: proponer/votar temas, conteo en tiempo real
+2. ⬜ Vista del alumno: proponer/votar temas, conteo en tiempo real ok
 3. ⬜ Panel del mentor (Supabase Auth)
 4. ⬜ Cron de apertura/cierre automático del ciclo
 5. ⬜ Enlazar `/votar/[slug]` en GHL
