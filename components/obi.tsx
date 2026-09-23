@@ -21,7 +21,7 @@ export function Obi({
         background: `linear-gradient(180deg, color-mix(in oklab, ${color} 88%, white) 0%, ${color} 45%, color-mix(in oklab, ${color} 80%, black) 100%)`,
         color: texto,
         boxShadow: esNegro
-          ? "inset 0 0 0 1px rgba(212,179,115,.55), 0 6px 18px -8px rgba(0,0,0,.8)"
+          ? "inset 0 0 0 1px rgba(61,208,251,.55), 0 6px 18px -8px rgba(0,0,0,.8)"
           : `0 6px 18px -8px color-mix(in oklab, ${color} 70%, transparent)`,
       }}
     >
@@ -29,12 +29,12 @@ export function Obi({
       <span
         aria-hidden
         className="absolute inset-x-0 top-[3px] h-px opacity-40"
-        style={{ background: esNegro ? "#d4b373" : texto }}
+        style={{ background: esNegro ? "#3dd0fb" : texto }}
       />
       <span
         aria-hidden
         className="absolute inset-x-0 bottom-[3px] h-px opacity-40"
-        style={{ background: esNegro ? "#d4b373" : texto }}
+        style={{ background: esNegro ? "#3dd0fb" : texto }}
       />
       <span className="relative">{nombre}</span>
       {/* Nudo */}

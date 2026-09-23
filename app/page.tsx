@@ -1,31 +1,27 @@
 import Link from "next/link";
-import { Sello } from "@/components/marca";
+import { Emblema } from "@/components/marca";
 
 // Los alumnos entran desde el enlace de su cinturón (/votar/[slug]).
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16 text-center">
+    <main className="flex flex-1 flex-col items-center justify-center gap-10 px-6 py-20 text-center">
       <div className="animate-aparecer">
-        <Sello className="size-14 -rotate-6 text-3xl" />
+        <Emblema className="size-24" />
       </div>
-      <div className="flex animate-aparecer flex-col gap-4 [animation-delay:120ms]">
-        <p className="rotulo justify-center">
-          <span className="font-serif text-sm tracking-normal text-kin-400">道場</span>
-          RoninX Academy
-        </p>
-        <h1 className="font-serif text-5xl font-bold tracking-tight sm:text-6xl">
-          Class<span className="texto-oro">Vote</span>
+      <div className="flex animate-aparecer flex-col items-center gap-5 [animation-delay:120ms]">
+        <p className="rotulo">RoninX Academy · ClassVote</p>
+        <h1 className="titular max-w-3xl text-5xl text-balance sm:text-7xl">
+          Tu voz decide <span className="texto-acento">la clase.</span>
         </h1>
-        <p className="mx-auto max-w-md text-base leading-relaxed text-washi/65">
-          Cada semana, tu voz decide el tema de la clase Mondo de tu cinturón. Entra desde el enlace de
-          tu grupo.
+        <p className="max-w-lg text-lg leading-relaxed text-balance text-washi/55">
+          Cada semana propones y votas el tema del Mondo de tu cinturón. Entra desde el enlace de tu grupo.
         </p>
       </div>
       <Link
         href="/mentor"
-        className="animate-aparecer text-xs font-medium tracking-[0.2em] text-washi/40 uppercase transition-colors [animation-delay:240ms] hover:text-kin-300"
+        className="animate-aparecer text-sm font-medium text-cian-300/80 transition-colors [animation-delay:240ms] hover:text-cian-200"
       >
-        師範 · Acceso mentores
+        Acceso mentores →
       </Link>
     </main>
   );

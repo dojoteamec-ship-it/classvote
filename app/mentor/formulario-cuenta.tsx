@@ -51,7 +51,7 @@ export function FormularioCuenta({
       {pie && (
         <p className="text-center text-sm text-washi/50">
           {pie.texto}{" "}
-          <Link href={pie.href} className="font-medium text-kin-300 underline-offset-4 hover:underline">
+          <Link href={pie.href} className="font-medium text-cian-300 underline-offset-4 hover:underline">
             {pie.enlace}
           </Link>
         </p>

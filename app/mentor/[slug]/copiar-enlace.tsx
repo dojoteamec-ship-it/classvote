@@ -16,7 +16,7 @@ export function CopiarEnlace({ ruta }: { ruta: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm">
-      <a href={ruta} target="_blank" className="text-washi/50 underline-offset-4 hover:text-kin-300 hover:underline">
+      <a href={ruta} target="_blank" className="text-washi/50 underline-offset-4 hover:text-cian-300 hover:underline">
         {ruta}
       </a>
       <button type="button" onClick={copiar} className="boton-secundario py-1 text-xs">

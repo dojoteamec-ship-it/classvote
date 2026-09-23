@@ -7,9 +7,9 @@ export function Puesto({ indice, activo = true }: { indice: number; activo?: boo
   const podio = indice < 3 && activo;
   return (
     <span
-      className={`grid size-8 shrink-0 place-items-center rounded-full font-serif text-sm font-bold sm:size-9 sm:text-base ${
+      className={`grid size-8 shrink-0 place-items-center rounded-full font-display text-sm font-bold sm:size-9 sm:text-base ${
         podio
-          ? "bg-gradient-to-b from-kin-300/20 to-kin-500/10 text-kin-300 ring-1 ring-kin-400/40"
+          ? "bg-gradient-to-b from-cian-300/20 to-cian-500/10 text-cian-300 ring-1 ring-cian-400/40"
           : "bg-white/5 text-washi/45 ring-1 ring-white/10"
       }`}
     >
@@ -24,7 +24,7 @@ export function BarraVotos({ votos, maximo }: { votos: number; maximo: number })
   return (
     <span aria-hidden className="block h-1 w-full overflow-hidden rounded-full bg-white/5">
       <span
-        className="block h-full rounded-full bg-gradient-to-r from-ai-400/70 to-kin-400/80 transition-[width] duration-700 ease-out"
+        className="block h-full rounded-full bg-gradient-to-r from-ai-400/70 to-cian-400/80 transition-[width] duration-700 ease-out"
         style={{ width: `${ancho}%` }}
       />
     </span>

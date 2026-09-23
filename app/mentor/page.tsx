@@ -11,9 +11,9 @@ const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "
 function Aviso({ kanji, titulo, texto }: { kanji: string; titulo: string; texto: string }) {
   return (
     <div className="tarjeta flex animate-aparecer items-start gap-5 p-6 [animation-delay:80ms]">
-      <span className="font-serif text-4xl text-kin-400/80">{kanji}</span>
+      <span className="font-display text-4xl text-cian-400/80">{kanji}</span>
       <div className="flex flex-col gap-1">
-        <h1 className="font-serif text-xl font-bold">{titulo}</h1>
+        <h1 className="font-display text-xl font-bold">{titulo}</h1>
         <p className="text-sm leading-relaxed text-washi/60">{texto}</p>
       </div>
     </div>
@@ -58,8 +58,8 @@ export default async function MentorPage() {
         <main className="flex flex-col gap-6">
           <div className="flex animate-aparecer flex-col gap-2 [animation-delay:80ms]">
             <Rotulo kanji="帯">Tus cinturones</Rotulo>
-            <h1 className="font-serif text-3xl font-bold">
-              Hola, <span className="texto-oro">{mentor.nombre.split(" ")[0]}</span>
+            <h1 className="font-display text-3xl font-bold">
+              Hola, <span className="texto-acento">{mentor.nombre.split(" ")[0]}</span>
             </h1>
           </div>
 
@@ -79,7 +79,7 @@ export default async function MentorPage() {
                   >
                     <span
                       aria-hidden
-                      className="pointer-events-none absolute -right-2 -bottom-6 font-serif text-[7rem] leading-none text-white/[0.035] transition-colors duration-500 group-hover:text-kin-400/[0.07]"
+                      className="pointer-events-none absolute -right-2 -bottom-6 font-display text-[7rem] leading-none text-white/[0.035] transition-colors duration-500 group-hover:text-cian-400/[0.07]"
                     >
                       {obiDe(c.slug).kanji}
                     </span>
@@ -87,11 +87,11 @@ export default async function MentorPage() {
                     <div className="flex items-end justify-between gap-3">
                       <div className="flex flex-col">
                         <span className="text-xs tracking-wider text-washi/40 uppercase">Clase Mondo</span>
-                        <span className="font-serif text-lg font-semibold">
+                        <span className="font-display text-lg font-semibold">
                           {c.dia_semana !== null ? DIAS[c.dia_semana] : ""} · {c.hora_local?.slice(0, 5)}
                         </span>
                       </div>
-                      <span className="text-sm text-washi/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-kin-300">
+                      <span className="text-sm text-washi/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-cian-300">
                         Abrir panel →
                       </span>
                     </div>

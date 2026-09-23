@@ -7,7 +7,7 @@ import { alternarCinturon, cambiarEstadoMentor, cambiarRolMentor } from "./accio
 import { BotonRestablecer } from "./boton-restablecer";
 
 const ESTADO = {
-  pendiente: { texto: "Pendiente", clase: "border-kin-400/40 bg-kin-400/10 text-kin-300" },
+  pendiente: { texto: "Pendiente", clase: "border-cian-400/40 bg-cian-400/10 text-cian-300" },
   activo: { texto: "Activo", clase: "border-matcha/30 bg-matcha/10 text-matcha" },
   inactivo: { texto: "Desactivado", clase: "border-white/10 bg-white/5 text-washi/50" },
 };
@@ -16,7 +16,7 @@ function Cifra({ etiqueta, valor, destacar = false }: { etiqueta: string; valor:
   return (
     <div className="tarjeta flex flex-col gap-1 px-4 py-3">
       <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-washi/40 uppercase">{etiqueta}</span>
-      <span className={`font-serif text-2xl font-bold ${destacar ? "texto-oro" : ""}`}>{valor}</span>
+      <span className={`font-display text-2xl font-bold ${destacar ? "texto-acento" : ""}`}>{valor}</span>
     </div>
   );
 }
@@ -40,7 +40,7 @@ export default async function AdminPage() {
       <main className="flex flex-col gap-6">
         <div className="flex animate-aparecer flex-col gap-2 [animation-delay:80ms]">
           <Rotulo kanji="管理">Administración</Rotulo>
-          <h1 className="font-serif text-3xl font-bold">Mentores</h1>
+          <h1 className="font-display text-3xl font-bold">Mentores</h1>
         </div>
 
         <section className="grid animate-aparecer grid-cols-3 gap-3 [animation-delay:140ms]">
@@ -61,7 +61,7 @@ export default async function AdminPage() {
               <li
                 key={m.id}
                 className={`tarjeta flex animate-aparecer flex-col gap-4 p-5 ${
-                  m.estado === "pendiente" ? "ring-1 ring-kin-400/30" : ""
+                  m.estado === "pendiente" ? "ring-1 ring-cian-400/30" : ""
                 } ${m.estado === "inactivo" ? "opacity-70" : ""}`}
                 style={{ animationDelay: `${200 + Math.min(i, 10) * 50}ms` }}
               >
