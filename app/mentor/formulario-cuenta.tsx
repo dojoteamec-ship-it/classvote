@@ -6,8 +6,6 @@ import type { EstadoFormulario } from "./acciones";
 
 type Campo = { name: string; label: string; type: string; autoComplete: string; minLength?: number };
 
-const INPUT = "rounded-md border border-current/20 bg-transparent p-2 font-normal";
-
 export function FormularioCuenta({
   accion,
   campos,
@@ -22,9 +20,9 @@ export function FormularioCuenta({
   const [estado, enviar, pendiente] = useActionState(accion, undefined);
 
   return (
-    <form action={enviar} className="flex flex-col gap-3 rounded-lg border border-current/20 p-4">
+    <form action={enviar} className="flex flex-col gap-4">
       {campos.map((campo) => (
-        <label key={campo.name} className="flex flex-col gap-1 text-sm font-medium">
+        <label key={campo.name} className="flex flex-col gap-1.5 text-sm font-medium text-washi/80">
           {campo.label}
           <input
             name={campo.name}
@@ -33,27 +31,27 @@ export function FormularioCuenta({
             minLength={campo.minLength}
             defaultValue={estado?.valores?.[campo.name]}
             required
-            className={INPUT}
+            className="campo font-normal"
           />
         </label>
       ))}
-      <button
-        type="submit"
-        disabled={pendiente}
-        className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-40"
-      >
+      <button type="submit" disabled={pendiente} className="boton-primario mt-1 w-full">
         {pendiente ? "Un momento…" : boton}
       </button>
       {estado?.error && (
-        <p role="alert" className="text-sm text-red-600">
+        <p role="alert" className="rounded-xl border border-shu-500/30 bg-shu-500/10 px-4 py-3 text-sm text-shu-400">
           {estado.error}
         </p>
       )}
-      {estado?.aviso && <p className="text-sm">{estado.aviso}</p>}
+      {estado?.aviso && (
+        <p className="rounded-xl border border-matcha/30 bg-matcha/10 px-4 py-3 text-sm text-matcha">
+          {estado.aviso}
+        </p>
+      )}
       {pie && (
-        <p className="text-sm opacity-70">
+        <p className="text-center text-sm text-washi/50">
           {pie.texto}{" "}
-          <Link href={pie.href} className="underline">
+          <Link href={pie.href} className="font-medium text-kin-300 underline-offset-4 hover:underline">
             {pie.enlace}
           </Link>
         </p>

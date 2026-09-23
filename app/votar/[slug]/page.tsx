@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
+import { Marca } from "@/components/marca";
+import { Obi } from "@/components/obi";
 import { createClient } from "@/lib/supabase/server";
-import { COLOR_CINTURON } from "@/lib/cinturones";
 import { formatearClase } from "@/lib/fecha";
 import { COLUMNAS_TEMA_ALUMNO } from "@/lib/temas";
 import type { CicloSemanal, Cinturon, Tema } from "@/types/database";
@@ -33,23 +34,28 @@ export default async function VotarPage({ params }: PageProps<"/votar/[slug]">) 
     : { data: null };
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col gap-2">
-        <span
-          className={`w-fit rounded-full px-3 py-1 text-sm font-medium ${COLOR_CINTURON[cinturon.slug] ?? ""}`}
-        >
-          {cinturon.nombre}
-        </span>
-        <h1 className="text-2xl font-semibold">¿De qué quieres que hablemos en el Mondo?</h1>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 pt-6 pb-16 sm:pt-10">
+      <div className="animate-aparecer">
+        <Marca />
+      </div>
+
+      <header className="flex animate-aparecer flex-col gap-4 [animation-delay:80ms]">
+        <Obi slug={cinturon.slug} nombre={cinturon.nombre} />
+        <h1 className="font-serif text-3xl leading-tight font-bold text-balance sm:text-4xl">
+          ¿De qué quieres que hablemos en el <span className="texto-oro">Mondo</span>?
+        </h1>
         {ciclo && (
-          <p className="text-sm opacity-70">
-            Próxima clase: {formatearClase(ciclo.fecha_clase, cinturon.hora_local)}
+          <p className="text-sm text-washi/60">
+            Próxima clase ·{" "}
+            <span className="text-washi/90 first-letter:uppercase">
+              {formatearClase(ciclo.fecha_clase, cinturon.hora_local)}
+            </span>
           </p>
         )}
       </header>
 
       {error || !ciclo ? (
-        <p className="rounded-lg border border-current/20 p-4 text-sm">
+        <p className="tarjeta p-5 text-sm text-washi/75">
           La votación no está disponible en este momento. Intenta de nuevo en unos minutos.
         </p>
       ) : (

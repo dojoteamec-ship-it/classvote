@@ -1,28 +1,265 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ClassVote · "Dojo nocturno"
+   藍 ai-iro (índigo) de fondo, 金 kin (oro apagado) para lo premium,
+   朱 shu (bermellón de torii) solo para acciones principales y el sello. */
+@theme {
+  --color-noche-950: #040914;
+  --color-noche-900: #081226;
+  --color-noche-800: #0d1b36;
+  --color-noche-700: #142649;
+  --color-ai-400: #6f8fcf;
+  --color-ai-300: #9db3e0;
+  --color-kin-300: #e6cf9c;
+  --color-kin-400: #d4b373;
+  --color-kin-500: #b8924f;
+  --color-shu-400: #e8604a;
+  --color-shu-500: #d4442c;
+  --color-shu-600: #b0341f;
+  --color-washi: #eee8db;
+  --color-matcha: #7fb685;
 
-/* Sin next/font/google: falla el build en entornos con red restringida. */
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
+  /* Compatibilidad con clases existentes. */
+  --color-background: var(--color-noche-950);
+  --color-foreground: var(--color-washi);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-serif: "Shippori Mincho", "Noto Serif JP", "Hiragino Mincho ProN", Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --animate-aparecer: aparecer 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-latido: latido 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-sello: sello 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-pulso: pulso 2.4s ease-in-out infinite;
+  --animate-niebla: niebla 24s ease-in-out infinite alternate;
+
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+  }
+  @keyframes latido {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.35);
+      color: var(--color-kin-300);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes sello {
+    from {
+      opacity: 0;
+      transform: scale(1.8) rotate(-18deg);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) rotate(-6deg);
+    }
+  }
+  @keyframes pulso {
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-matcha) 55%, transparent);
+    }
+    50% {
+      opacity: 0.75;
+      box-shadow: 0 0 0 6px transparent;
+    }
+  }
+  @keyframes niebla {
+    from {
+      transform: translateX(-3%) translateY(0);
+    }
+    to {
+      transform: translateX(3%) translateY(-2%);
+    }
   }
 }
 
+html {
+  color-scheme: dark;
+  background: var(--color-noche-950);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-noche-950);
+  color: var(--color-washi);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-kin-400) 35%, transparent);
+}
+
+/* Superficies ---------------------------------------------------------- */
+
+/* Vidrio esmerilado con filo dorado arriba. */
+@utility tarjeta {
+  position: relative;
+  border-radius: 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: linear-gradient(180deg, rgb(20 38 73 / 0.55), rgb(8 18 38 / 0.7));
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.05) inset,
+    0 24px 60px -24px rgb(0 0 0 / 0.7);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 1.25rem auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(212 179 115 / 0.45), transparent);
+  }
+}
+
+@utility tarjeta-interactiva {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s,
+    box-shadow 0.35s;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgb(212 179 115 / 0.3);
+    box-shadow:
+      0 1px 0 0 rgb(255 255 255 / 0.06) inset,
+      0 30px 70px -28px rgb(0 0 0 / 0.8),
+      0 0 0 1px rgb(212 179 115 / 0.08);
+  }
+}
+
+/* Controles ------------------------------------------------------------- */
+
+@utility boton-primario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.875rem;
+  padding: 0.7rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  color: #fff8ef;
+  background: linear-gradient(180deg, var(--color-shu-400), var(--color-shu-600));
+  box-shadow:
+    0 1px 0 0 rgb(255 255 255 / 0.25) inset,
+    0 10px 30px -10px rgb(212 68 44 / 0.7);
+  transition:
+    transform 0.2s,
+    box-shadow 0.3s,
+    filter 0.3s,
+    opacity 0.2s;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+    box-shadow:
+      0 1px 0 0 rgb(255 255 255 / 0.3) inset,
+      0 14px 40px -10px rgb(212 68 44 / 0.9);
+  }
+  &:active:not(:disabled) {
+    transform: translateY(1px) scale(0.99);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+@utility boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.04);
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-washi);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(212 179 115 / 0.4);
+    color: var(--color-kin-300);
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+@utility campo {
+  width: 100%;
+  border-radius: 0.875rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(4 9 20 / 0.55);
+  padding: 0.75rem 0.95rem;
+  font-size: 0.95rem;
+  color: var(--color-washi);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+
+  &::placeholder {
+    color: rgb(238 232 219 / 0.3);
+  }
+  &:focus {
+    outline: none;
+    border-color: rgb(212 179 115 / 0.6);
+    background: rgb(4 9 20 / 0.75);
+    box-shadow: 0 0 0 4px rgb(212 179 115 / 0.12);
+  }
+}
+
+/* Etiqueta de sección: kanji dorado + texto en versalitas. */
+@utility rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(238 232 219 / 0.55);
+}
+
+@utility texto-oro {
+  background: linear-gradient(180deg, var(--color-kin-300), var(--color-kin-500));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

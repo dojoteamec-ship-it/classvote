@@ -2,17 +2,17 @@ import { redirect } from "next/navigation";
 import { obtenerSesion } from "@/lib/auth";
 import { registrarse } from "../acciones";
 import { FormularioCuenta } from "../formulario-cuenta";
+import { PantallaAcceso } from "../pantalla-acceso";
 
 export default async function RegistroPage() {
   const { mentor } = await obtenerSesion();
   if (mentor) redirect("/mentor");
 
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-4 px-4 py-8">
-      <h1 className="text-2xl font-semibold">Crear cuenta de mentor</h1>
-      <p className="text-sm opacity-70">
-        Tu cuenta quedará pendiente hasta que el administrador la apruebe y te asigne tu cinturón.
-      </p>
+    <PantallaAcceso
+      titulo="Crea tu cuenta"
+      descripcion="Tu cuenta quedará pendiente hasta que el administrador la apruebe y te asigne tu cinturón."
+    >
       <FormularioCuenta
         accion={registrarse}
         boton="Crear cuenta"
@@ -29,6 +29,6 @@ export default async function RegistroPage() {
         ]}
         pie={{ texto: "¿Ya tienes cuenta?", enlace: "Inicia sesión", href: "/mentor/entrar" }}
       />
-    </main>
+    </PantallaAcceso>
   );
 }
