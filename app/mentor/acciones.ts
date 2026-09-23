@@ -106,10 +106,14 @@ export async function cambiarTipoSesion(cicloId: string, tipo: SesionTipo | null
   return actualizar("ciclos_semanales", cicloId, { tipo_sesion: tipo });
 }
 
+// Reabrir marca `reabierto` para que el cierre automático (Fase 4) no vuelva
+// a cerrar esa clase; desde ahí la cierra el mentor.
 export async function cambiarEstadoCiclo(cicloId: string, estado: CicloEstado) {
+  const cerrar = estado === "cerrado";
   return actualizar("ciclos_semanales", cicloId, {
     estado,
-    cerrado_en: estado === "cerrado" ? new Date().toISOString() : null,
+    cerrado_en: cerrar ? new Date().toISOString() : null,
+    ...(cerrar ? {} : { reabierto: true }),
   });
 }
 

@@ -26,6 +26,9 @@ Chequeos: `npm run lint`, `npm run typecheck`, `npm run build`.
 - `migrations/0003_fase3_mentores.sql` — cuentas de mentor (registro propio +
   aprobación del admin), roles `mentor`/`admin`, temas ocultos y permisos del
   panel. Los permisos se concentran en `es_admin()` y `puede_gestionar()`.
+- `migrations/0004_fase4_cierre_automatico.sql` — `pg_cron` cada 5 min cierra
+  los ciclos cuya clase ya empezó (salvo los reabiertos por un mentor) y deja
+  abierto el de la próxima clase.
 
 ## Rutas
 
@@ -35,7 +38,9 @@ Chequeos: `npm run lint`, `npm run typecheck`, `npm run build`.
   hasta que un admin la apruebe).
 - `/mentor` — cinturones del mentor. `/mentor/[slug]` — panel: temas por votos
   en vivo, tipo de sesión, cerrar/reabrir votación, ocultar temas.
-- `/admin` — aprobar/desactivar mentores, asignar cinturones, dar rol admin.
+- `/admin` — aprobar/desactivar mentores, asignar cinturones, dar rol admin,
+  restablecer contraseñas (contraseña temporal; requiere la service role).
+- `/mentor/cuenta` — el mentor cambia su contraseña.
 
 ## Primer admin
 
@@ -50,5 +55,5 @@ update mentores set estado = 'activo', rol = 'admin' where email = 'tu-correo@ej
 1. ✅ Esqueleto Next.js + esquema Supabase + Vercel
 2. ✅ Vista del alumno: proponer/votar temas, conteo en tiempo real
 3. ✅ Panel del mentor (Supabase Auth)
-4. ⬜ Cron de apertura/cierre automático del ciclo
+4. ✅ Cron de apertura/cierre automático del ciclo
 5. ⬜ Enlazar `/votar/[slug]` en GHL

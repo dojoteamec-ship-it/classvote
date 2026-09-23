@@ -19,10 +19,12 @@ export function PanelCiclo({
   cicloInicial,
   temasIniciales,
   titulo,
+  horaClase,
 }: {
   cicloInicial: CicloSemanal;
   temasIniciales: Tema[];
   titulo: string;
+  horaClase: string | null;
 }) {
   const [supabase] = useState(createClient);
   const { ciclo, setCiclo, temas, setTemas } = useCicloEnVivo(supabase, cicloInicial, temasIniciales, {
@@ -60,10 +62,10 @@ export function PanelCiclo({
       ? "¿Reabrir la votación? Los alumnos podrán volver a proponer y votar."
       : "¿Cerrar la votación? Los alumnos ya no podrán proponer ni votar.";
     if (!window.confirm(pregunta)) return;
-    const anterior = ciclo.estado;
+    const anterior = { estado: ciclo.estado, reabierto: ciclo.reabierto };
     guardar(
-      () => setCiclo((c) => ({ ...c, estado: nuevo })),
-      () => setCiclo((c) => ({ ...c, estado: anterior })),
+      () => setCiclo((c) => ({ ...c, estado: nuevo, reabierto: c.reabierto || nuevo === "votando" })),
+      () => setCiclo((c) => ({ ...c, ...anterior })),
       cambiarEstadoCiclo(ciclo.id, nuevo),
     );
   }
@@ -114,13 +116,24 @@ export function PanelCiclo({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={alternarEstado}
-          className="w-fit rounded-md border border-current/30 px-3 py-1 text-sm hover:bg-current/5"
-        >
-          {cerrado ? "Reabrir votación" : "Cerrar votación ahora"}
-        </button>
+        <div className="flex flex-col gap-1">
+          <button
+            type="button"
+            onClick={alternarEstado}
+            className="w-fit rounded-md border border-current/30 px-3 py-1 text-sm hover:bg-current/5"
+          >
+            {cerrado ? "Reabrir votación" : "Cerrar votación ahora"}
+          </button>
+          {!cerrado && (
+            <span className="text-xs opacity-60">
+              {ciclo.reabierto
+                ? "Reabierta manualmente: no se cerrará sola, ciérrala cuando termines."
+                : horaClase
+                  ? `Se cierra sola a las ${horaClase.slice(0, 5)} del día de la clase.`
+                  : null}
+            </span>
+          )}
+        </div>
 
         {error && (
           <p role="alert" className="text-sm text-red-600">

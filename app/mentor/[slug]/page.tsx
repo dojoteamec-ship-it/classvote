@@ -100,6 +100,7 @@ export default async function PanelCinturonPage({
           cicloInicial={ciclo}
           temasIniciales={temas ?? []}
           titulo={formatearClase(ciclo.fecha_clase, cinturon.hora_local)}
+          horaClase={cinturon.hora_local}
         />
       ) : (
         <p className="text-sm opacity-70">No hay clases registradas para este cinturón.</p>
