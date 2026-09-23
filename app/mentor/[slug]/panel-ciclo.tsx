@@ -13,6 +13,8 @@ const OPCIONES_SESION: { valor: SesionTipo | null; etiqueta: string }[] = [
   { valor: "practica", etiqueta: ETIQUETA_SESION.practica },
 ];
 
+const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
+
 export function PanelCiclo({
   cicloInicial,
   temasIniciales,
@@ -30,6 +32,7 @@ export function PanelCiclo({
   const ordenados = useMemo(() => [...temas].sort(ordenarTemas), [temas]);
   const cerrado = ciclo.estado === "cerrado";
   const totalVotos = temas.reduce((suma, t) => suma + (t.oculto ? 0 : t.votos_count), 0);
+  const visibles = temas.filter((t) => !t.oculto).length;
 
   // Cambio optimista: se aplica al instante y se revierte si la base lo rechaza.
   async function guardar(aplicar: () => void, revertir: () => void, accion: Promise<{ error?: string }>) {
@@ -130,7 +133,7 @@ export function PanelCiclo({
         <div className="flex items-baseline justify-between">
           <h2 className="text-lg font-semibold">Temas</h2>
           <span className="text-xs opacity-60">
-            {temas.filter((t) => !t.oculto).length} temas · {totalVotos} votos · en vivo
+            {plural(visibles, "tema", "temas")} · {plural(totalVotos, "voto", "votos")} · en vivo
           </span>
         </div>
 

@@ -3,6 +3,7 @@ import { COLOR_CINTURON } from "@/lib/cinturones";
 import type { Cinturon, Mentor, MentorCinturon } from "@/types/database";
 import { Encabezado } from "../mentor/encabezado";
 import { alternarCinturon, cambiarEstadoMentor, cambiarRolMentor } from "./acciones";
+import { BotonRestablecer } from "./boton-restablecer";
 
 const ETIQUETA_ESTADO = { pendiente: "Pendiente", activo: "Activo", inactivo: "Desactivado" };
 const BOTON = "rounded-md border border-current/20 px-2 py-1 text-xs hover:bg-current/5";
@@ -84,6 +85,7 @@ export default async function AdminPage() {
                       <button className={BOTON}>{m.rol === "admin" ? "Quitar admin" : "Hacer admin"}</button>
                     </form>
                   )}
+                  {m.estado !== "inactivo" && <BotonRestablecer mentorId={m.id} />}
                 </div>
               )}
 

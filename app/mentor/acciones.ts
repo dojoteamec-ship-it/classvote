@@ -15,7 +15,11 @@ export async function entrar(_: EstadoFormulario, form: FormData): Promise<Estad
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     console.error("entrar", error.code, error.message);
-    return { error: "Correo o contraseña incorrectos.", valores: { email } };
+    const mensaje =
+      error.code === "email_not_confirmed"
+        ? "Tu correo todavía no está confirmado. Pídele al administrador que restablezca tu contraseña."
+        : "Correo o contraseña incorrectos.";
+    return { error: mensaje, valores: { email } };
   }
   redirect("/mentor");
 }
@@ -52,6 +56,29 @@ export async function registrarse(_: EstadoFormulario, form: FormData): Promise<
     return { aviso: "Revisa tu correo para confirmar la cuenta y luego inicia sesión." };
   }
   redirect("/mentor");
+}
+
+export async function cambiarContrasena(
+  _: EstadoFormulario,
+  form: FormData,
+): Promise<EstadoFormulario> {
+  const password = String(form.get("password") ?? "");
+  const confirmacion = String(form.get("confirmacion") ?? "");
+  if (password.length < 8) return { error: "La contraseña debe tener al menos 8 caracteres." };
+  if (password !== confirmacion) return { error: "Las contraseñas no coinciden." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    console.error("cambiarContrasena", error.code, error.message);
+    return {
+      error:
+        error.code === "same_password"
+          ? "La nueva contraseña debe ser distinta a la actual."
+          : "No se pudo cambiar la contraseña. Intenta de nuevo.",
+    };
+  }
+  return { aviso: "Listo, tu contraseña se cambió." };
 }
 
 export async function salir() {

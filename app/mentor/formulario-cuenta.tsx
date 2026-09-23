@@ -17,7 +17,7 @@ export function FormularioCuenta({
   accion: (estado: EstadoFormulario, form: FormData) => Promise<EstadoFormulario>;
   campos: Campo[];
   boton: string;
-  pie: { texto: string; enlace: string; href: string };
+  pie?: { texto: string; enlace: string; href: string };
 }) {
   const [estado, enviar, pendiente] = useActionState(accion, undefined);
 
@@ -50,12 +50,14 @@ export function FormularioCuenta({
         </p>
       )}
       {estado?.aviso && <p className="text-sm">{estado.aviso}</p>}
-      <p className="text-sm opacity-70">
-        {pie.texto}{" "}
-        <Link href={pie.href} className="underline">
-          {pie.enlace}
-        </Link>
-      </p>
+      {pie && (
+        <p className="text-sm opacity-70">
+          {pie.texto}{" "}
+          <Link href={pie.href} className="underline">
+            {pie.enlace}
+          </Link>
+        </p>
+      )}
     </form>
   );
 }
