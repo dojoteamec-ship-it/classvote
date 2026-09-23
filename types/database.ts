@@ -41,6 +41,7 @@ export type Tema = {
   ciclo_id: string;
   texto: string;
   alumno_alias: string | null;
+  votos_count: number;
   creado_en: string;
 };
 

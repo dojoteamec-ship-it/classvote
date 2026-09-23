@@ -21,11 +21,18 @@ Chequeos: `npm run lint`, `npm run typecheck`, `npm run build`.
 
 - `migrations/0001_init.sql` — esquema + RLS (ya aplicado en Supabase).
 - `seed.sql` — los 7 cinturones con su horario fijo (ya aplicado).
+- `migrations/0002_fase2_votacion.sql` — conteo de votos, permisos del alumno,
+  `ciclo_actual(slug)` y Realtime. Correr en el SQL Editor de Supabase.
+
+## Rutas
+
+- `/votar/[slug]` — vista del alumno por cinturón (`amarillo`, `naranja`, `verde`,
+  `azul`, `marron`, `negro`). Abre el ciclo de la próxima clase si no existe.
 
 ## Fases
 
 1. ✅ Esqueleto Next.js + esquema Supabase + Vercel
-2. ⬜ Vista del alumno: proponer/votar temas, conteo en tiempo real
+2. ✅ Vista del alumno: proponer/votar temas, conteo en tiempo real
 3. ⬜ Panel del mentor (Supabase Auth)
 4. ⬜ Cron de apertura/cierre automático del ciclo
 5. ⬜ Enlazar `/votar/[slug]` en GHL
