@@ -1,18 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import type { FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { obtenerFingerprint } from "@/lib/fingerprint";
+import { COLUMNAS_TEMA_ALUMNO } from "@/lib/temas";
+import { ordenarTemas, useCicloEnVivo } from "@/lib/use-ciclo-en-vivo";
 import type { CicloSemanal, Tema } from "@/types/database";
 
-const COLUMNAS_TEMA = "id, ciclo_id, texto, alumno_alias, votos_count, creado_en";
 const KEY_ALIAS = "classvote:alias";
 const keyVotados = (cicloId: string) => `classvote:votados:${cicloId}`;
-
-function ordenar(a: Tema, b: Tema) {
-  return b.votos_count - a.votos_count || a.creado_en.localeCompare(b.creado_en);
-}
 
 function leerVotados(cicloId: string): Set<string> {
   try {
@@ -53,8 +50,9 @@ export function Votacion({
   temasIniciales: Tema[];
 }) {
   const [supabase] = useState(createClient);
-  const [ciclo, setCiclo] = useState(cicloInicial);
-  const [temas, setTemas] = useState(temasIniciales);
+  const { ciclo, temas, setTemas } = useCicloEnVivo(supabase, cicloInicial, temasIniciales, {
+    incluirOcultos: false,
+  });
   const montado = useMontado();
   const [votadosEditados, setVotados] = useState<Set<string> | null>(null);
   const [aliasEditado, setAlias] = useState<string | null>(null);
@@ -69,40 +67,7 @@ export function Votacion({
   const alias = aliasEditado ?? (montado ? leerAlias() : "");
 
   const cerrado = ciclo.estado === "cerrado";
-  const ordenados = useMemo(() => [...temas].sort(ordenar), [temas]);
-
-  // Tiempo real: temas nuevos, cambios de conteo y cierre del ciclo.
-  useEffect(() => {
-    const canal = supabase
-      .channel(`ciclo-${ciclo.id}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "temas", filter: `ciclo_id=eq.${ciclo.id}` },
-        (payload) => {
-          if (payload.eventType === "DELETE") {
-            const id = (payload.old as Partial<Tema>).id;
-            setTemas((ts) => ts.filter((t) => t.id !== id));
-            return;
-          }
-          const nuevo = payload.new as Tema;
-          setTemas((ts) =>
-            ts.some((t) => t.id === nuevo.id)
-              ? ts.map((t) => (t.id === nuevo.id ? nuevo : t))
-              : [...ts, nuevo],
-          );
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "ciclos_semanales", filter: `id=eq.${ciclo.id}` },
-        (payload) => setCiclo(payload.new as CicloSemanal),
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(canal);
-    };
-  }, [supabase, ciclo.id]);
+  const ordenados = useMemo(() => [...temas].sort(ordenarTemas), [temas]);
 
   function sumarVoto(temaId: string, delta: number) {
     setTemas((ts) =>
@@ -134,7 +99,7 @@ export function Votacion({
     guardarVotados(ciclo.id, sinVoto);
     setAviso(
       error.code === "42501"
-        ? "La votación de esta clase ya cerró."
+        ? "Este tema ya no está disponible o la votación cerró. Recarga la página."
         : "No se pudo registrar tu voto. Intenta de nuevo.",
     );
   }
@@ -150,7 +115,7 @@ export function Votacion({
     const { data, error } = await supabase
       .from("temas")
       .insert({ ciclo_id: ciclo.id, texto: limpio, alumno_alias: nombre || null })
-      .select(COLUMNAS_TEMA)
+      .select(COLUMNAS_TEMA_ALUMNO)
       .single<Tema>();
     setEnviando(false);
 

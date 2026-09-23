@@ -4,6 +4,8 @@
 
 export type SesionTipo = "qa" | "practica";
 export type CicloEstado = "votando" | "cerrado";
+export type MentorEstado = "pendiente" | "activo" | "inactivo";
+export type MentorRol = "mentor" | "admin";
 
 export type Cinturon = {
   id: string;
@@ -20,6 +22,9 @@ export type Mentor = {
   nombre: string;
   email: string;
   auth_user_id: string | null;
+  estado: MentorEstado;
+  rol: MentorRol;
+  creado_en: string;
 };
 
 export type MentorCinturon = {
@@ -42,6 +47,8 @@ export type Tema = {
   texto: string;
   alumno_alias: string | null;
   votos_count: number;
+  /** Solo lo pide el panel del mentor. */
+  oculto?: boolean;
   creado_en: string;
 };
 

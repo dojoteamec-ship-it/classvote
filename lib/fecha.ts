@@ -9,3 +9,8 @@ export function formatearClase(fecha: string, hora: string | null): string {
   }).format(new Date(`${fecha}T12:00:00Z`));
   return hora ? `${dia} · ${hora.slice(0, 5)} (hora Ecuador)` : dia;
 }
+
+// Fecha de hoy en Ecuador como "YYYY-MM-DD".
+export function hoyEnEcuador(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Guayaquil" }).format(new Date());
+}

@@ -2,10 +2,9 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { COLOR_CINTURON } from "@/lib/cinturones";
 import { formatearClase } from "@/lib/fecha";
+import { COLUMNAS_TEMA_ALUMNO } from "@/lib/temas";
 import type { CicloSemanal, Cinturon, Tema } from "@/types/database";
 import { Votacion } from "./votacion";
-
-const COLUMNAS_TEMA = "id, ciclo_id, texto, alumno_alias, votos_count, creado_en";
 
 export default async function VotarPage({ params }: PageProps<"/votar/[slug]">) {
   const { slug } = await params;
@@ -26,7 +25,7 @@ export default async function VotarPage({ params }: PageProps<"/votar/[slug]">) 
   const { data: temas } = ciclo
     ? await supabase
         .from("temas")
-        .select(COLUMNAS_TEMA)
+        .select(COLUMNAS_TEMA_ALUMNO)
         .eq("ciclo_id", ciclo.id)
         .order("votos_count", { ascending: false })
         .order("creado_en", { ascending: true })
