@@ -31,6 +31,7 @@ export function FormularioCuenta({
             type={campo.type}
             autoComplete={campo.autoComplete}
             minLength={campo.minLength}
+            defaultValue={estado?.valores?.[campo.name]}
             required
             className={INPUT}
           />

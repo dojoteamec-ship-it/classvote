@@ -4,14 +4,19 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { CicloEstado, SesionTipo } from "@/types/database";
 
-export type EstadoFormulario = { error?: string; aviso?: string } | undefined;
+export type EstadoFormulario =
+  | { error?: string; aviso?: string; valores?: Record<string, string> }
+  | undefined;
 
 export async function entrar(_: EstadoFormulario, form: FormData): Promise<EstadoFormulario> {
   const email = String(form.get("email") ?? "").trim();
   const password = String(form.get("password") ?? "");
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: "Correo o contraseña incorrectos." };
+  if (error) {
+    console.error("entrar", error.code, error.message);
+    return { error: "Correo o contraseña incorrectos.", valores: { email } };
+  }
   redirect("/mentor");
 }
 
@@ -19,8 +24,11 @@ export async function registrarse(_: EstadoFormulario, form: FormData): Promise<
   const nombre = String(form.get("nombre") ?? "").trim();
   const email = String(form.get("email") ?? "").trim();
   const password = String(form.get("password") ?? "");
-  if (nombre.length < 2) return { error: "Escribe tu nombre." };
-  if (password.length < 8) return { error: "La contraseña debe tener al menos 8 caracteres." };
+  const valores = { nombre, email };
+  if (nombre.length < 2) return { error: "Escribe tu nombre.", valores };
+  if (password.length < 8) {
+    return { error: "La contraseña debe tener al menos 8 caracteres.", valores };
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -29,11 +37,14 @@ export async function registrarse(_: EstadoFormulario, form: FormData): Promise<
     options: { data: { nombre } },
   });
   if (error) {
+    // El código técnico ayuda a diagnosticar desde la captura o los logs.
+    console.error("registrarse", error.code, error.status, error.message);
     return {
       error:
         error.code === "user_already_exists"
           ? "Ya existe una cuenta con ese correo. Inicia sesión."
-          : "No se pudo crear la cuenta. Revisa los datos e intenta de nuevo.",
+          : `No se pudo crear la cuenta (${error.code ?? error.status ?? "error"}: ${error.message}).`,
+      valores,
     };
   }
   // Si Supabase todavía pide confirmar el correo, no hay sesión aún.
