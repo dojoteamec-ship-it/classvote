@@ -5,6 +5,8 @@ Cada cinturón tiene su propia URL y su propio ciclo de votación.
 
 Stack: Next.js 16 (App Router) + TypeScript + Tailwind CSS v4 + Supabase, desplegado en Vercel.
 
+Repo: `dojoteamec-ship-it/classvote` · Deploy: Vercel (team `dojoteamec-ship-its-projects`, proyecto `classvote`).
+
 ## Desarrollo
 
 ```bash
