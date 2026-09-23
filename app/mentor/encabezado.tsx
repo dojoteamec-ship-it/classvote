@@ -14,7 +14,9 @@ export function Encabezado({ mentor }: { mentor: Mentor }) {
             Administrar
           </Link>
         )}
-        <span className="opacity-70">{mentor.nombre}</span>
+        <Link href="/mentor/cuenta" className="opacity-70 hover:underline">
+          {mentor.nombre}
+        </Link>
         <form action={salir}>
           <button type="submit" className="underline">
             Salir

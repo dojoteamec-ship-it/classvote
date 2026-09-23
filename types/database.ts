@@ -39,6 +39,8 @@ export type CicloSemanal = {
   estado: CicloEstado;
   tipo_sesion: SesionTipo | null;
   cerrado_en: string | null;
+  /** true si un mentor la reabrió: el cierre automático ya no la toca. */
+  reabierto: boolean;
 };
 
 export type Tema = {
