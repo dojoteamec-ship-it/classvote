@@ -19,7 +19,7 @@ export function PantallaAcceso({
       <section className="tarjeta w-full max-w-sm animate-aparecer p-6 [animation-delay:100ms] sm:p-8">
         <div className="mb-6 flex flex-col gap-3">
           <Rotulo kanji="師範">Mentores</Rotulo>
-          <h1 className="font-serif text-2xl font-bold">{titulo}</h1>
+          <h1 className="font-display text-2xl font-bold">{titulo}</h1>
           {descripcion && <p className="text-sm leading-relaxed text-washi/55">{descripcion}</p>}
         </div>
         {children}

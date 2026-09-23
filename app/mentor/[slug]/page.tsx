@@ -72,7 +72,7 @@ export default async function PanelCinturonPage({
             <CopiarEnlace ruta={`/votar/${cinturon.slug}`} />
           </div>
           {ciclo && (
-            <h1 className="font-serif text-3xl font-bold first-letter:uppercase sm:text-4xl">
+            <h1 className="font-display text-3xl font-bold first-letter:uppercase sm:text-4xl">
               {formatearClase(ciclo.fecha_clase, cinturon.hora_local)}
             </h1>
           )}
@@ -92,7 +92,7 @@ export default async function PanelCinturonPage({
                   aria-current={actual ? "page" : undefined}
                   className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
                     actual
-                      ? "border-kin-400/50 bg-kin-400/15 text-kin-300"
+                      ? "border-cian-400/50 bg-cian-400/15 text-cian-300"
                       : "border-white/10 bg-white/[0.03] text-washi/55 hover:border-white/20 hover:text-washi"
                   }`}
                 >

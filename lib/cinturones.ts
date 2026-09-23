@@ -6,7 +6,7 @@ export const OBI: Record<string, { color: string; texto: string; kanji: string }
   verde: { color: "#3a9a5c", texto: "#f3fbf5", kanji: "緑" },
   azul: { color: "#3469c9", texto: "#f2f6ff", kanji: "青" },
   marron: { color: "#7c4a2b", texto: "#fbf1ea", kanji: "茶" },
-  negro: { color: "#0d0d10", texto: "#e6cf9c", kanji: "黒" },
+  negro: { color: "#0d0d10", texto: "#7fe0ff", kanji: "黒" },
 };
 
 export const obiDe = (slug: string) => OBI[slug] ?? OBI.blanco;

@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { CuentaRegresiva } from "@/components/cuenta-regresiva";
+import { instanteClase } from "@/lib/fecha";
 import { EstadoVotacion, Rotulo } from "@/components/rotulo";
 import { BarraVotos, Contador, Puesto } from "@/components/tema-ui";
 import { createClient } from "@/lib/supabase/client";
@@ -19,7 +21,7 @@ function Cifra({ etiqueta, children }: { etiqueta: string; children: React.React
   return (
     <div className="tarjeta flex flex-col gap-1 px-4 py-3">
       <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-washi/40 uppercase">{etiqueta}</span>
-      <span className="font-serif text-2xl font-bold">{children}</span>
+      <span className="titular text-2xl">{children}</span>
     </div>
   );
 }
@@ -89,7 +91,13 @@ export function PanelCiclo({
     );
   }
 
-  const cierre = cerrado ? "Cerrada" : ciclo.reabierto ? "Manual" : (horaClase?.slice(0, 5) ?? "—");
+  const cierre = cerrado ? (
+    "Cerrada"
+  ) : ciclo.reabierto || !horaClase ? (
+    "Manual"
+  ) : (
+    <CuentaRegresiva objetivo={instanteClase(ciclo.fecha_clase, horaClase)} compacta />
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -98,9 +106,9 @@ export function PanelCiclo({
           <Contador valor={visibles.length} />
         </Cifra>
         <Cifra etiqueta="Votos">
-          <Contador valor={totalVotos} className="texto-oro" />
+          <Contador valor={totalVotos} className="texto-acento" />
         </Cifra>
-        <Cifra etiqueta="Cierre">{cierre}</Cifra>
+        <Cifra etiqueta="Cierra en">{cierre}</Cifra>
         <div className="tarjeta flex flex-col justify-center gap-2 px-4 py-3">
           <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-washi/40 uppercase">En vivo</span>
           <EstadoVotacion abierta={!cerrado} />
@@ -122,11 +130,11 @@ export function PanelCiclo({
                   onClick={() => elegirTipo(op.valor)}
                   className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-all duration-300 ${
                     activo
-                      ? "border-kin-400/60 bg-kin-400/12 text-washi shadow-[0_0_0_4px_rgba(212,179,115,0.08)]"
+                      ? "border-cian-400/60 bg-cian-400/12 text-washi shadow-[0_0_0_4px_rgba(61,208,251,0.1)]"
                       : "border-white/10 bg-white/[0.03] text-washi/60 hover:border-white/20 hover:text-washi"
                   }`}
                 >
-                  <span className={`font-serif text-xl ${activo ? "text-kin-300" : "text-washi/30"}`}>
+                  <span className={`font-display text-xl ${activo ? "text-cian-300" : "text-washi/30"}`}>
                     {op.kanji}
                   </span>
                   {op.etiqueta}
@@ -167,7 +175,7 @@ export function PanelCiclo({
 
         {ordenados.length === 0 ? (
           <div className="tarjeta flex flex-col items-center gap-2 px-6 py-10 text-center">
-            <span className="font-serif text-3xl text-washi/20">空</span>
+            <span className="font-display text-3xl text-washi/20">空</span>
             <p className="text-sm text-washi/55">Los alumnos todavía no han propuesto temas.</p>
           </div>
         ) : (
@@ -193,7 +201,7 @@ export function PanelCiclo({
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-2">
                   <span className="flex items-baseline gap-1">
-                    <Contador valor={tema.votos_count} className="font-serif text-2xl font-bold" />
+                    <Contador valor={tema.votos_count} className="font-display text-2xl font-bold" />
                     <span className="text-[0.65rem] text-washi/40 uppercase">
                       {tema.votos_count === 1 ? "voto" : "votos"}
                     </span>

@@ -21,9 +21,9 @@ export function BotonRestablecer({ mentorId }: { mentorId: string }) {
         {pendiente ? "Generando…" : "Restablecer contraseña"}
       </button>
       {estado?.clave && (
-        <span className="flex basis-full flex-wrap items-center gap-2 rounded-xl border border-kin-400/30 bg-kin-400/10 px-3 py-2 text-xs text-washi/80">
+        <span className="flex basis-full flex-wrap items-center gap-2 rounded-xl border border-cian-400/30 bg-cian-400/10 px-3 py-2 text-xs text-washi/80">
           Contraseña temporal:
-          <code className="rounded-md bg-noche-950/70 px-2 py-1 font-mono text-sm text-kin-300 select-all">
+          <code className="rounded-md bg-noche-950/70 px-2 py-1 font-mono text-sm text-cian-300 select-all">
             {estado.clave}
           </code>
           <span className="text-washi/50">Cópiala ahora y envíasela; que la cambie en Mi cuenta.</span>

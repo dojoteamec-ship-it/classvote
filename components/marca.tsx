@@ -1,27 +1,32 @@
+import Image from "next/image";
 import Link from "next/link";
+import emblema from "@/public/marca/ronin-emblema.png";
+import logo from "@/public/marca/ronin-logo.png";
 
-// Sello hanko (印) + nombre. `compacta` para barras de navegación.
-export function Sello({ kanji = "投", className = "" }: { kanji?: string; className?: string }) {
+// Emblema del ronin (la "O" del logo) con halo cian.
+export function Emblema({ className = "size-9" }: { className?: string }) {
   return (
     <span
-      className={`inline-grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-b from-shu-400 to-shu-600 font-serif text-lg font-bold text-[#fff4ea] shadow-[0_6px_20px_-6px_rgba(212,68,44,0.8),inset_0_1px_0_rgba(255,255,255,0.25)] ${className}`}
+      className={`relative inline-grid shrink-0 place-items-center rounded-full bg-noche-950 shadow-[0_0_0_1px_rgba(61,208,251,0.35),0_0_24px_-4px_rgba(61,208,251,0.6)] ${className}`}
     >
-      {kanji}
+      <Image src={emblema} alt="" className="size-full rounded-full" priority />
     </span>
   );
 }
 
+// Logotipo RONIN + nombre de la app.
 export function Marca({ href = "/", compacta = false }: { href?: string; compacta?: boolean }) {
   return (
-    <Link href={href} className="group inline-flex items-center gap-3">
-      <Sello className="-rotate-3 transition-transform duration-300 group-hover:rotate-0" />
-      <span className="flex flex-col leading-tight">
-        <span className={`font-serif font-bold tracking-wide ${compacta ? "text-base" : "text-lg"}`}>
-          ClassVote
-        </span>
-        <span className="text-[0.65rem] font-medium tracking-[0.25em] text-washi/45 uppercase">
-          RoninX Academy
-        </span>
+    <Link href={href} aria-label="ClassVote · RoninX Academy" className="group inline-flex items-center gap-3">
+      <Image
+        src={logo}
+        alt="RONIN"
+        priority
+        className={`w-auto opacity-95 transition-opacity group-hover:opacity-100 ${compacta ? "h-4" : "h-5"}`}
+      />
+      <span aria-hidden className="h-4 w-px bg-white/20" />
+      <span className={`font-medium tracking-tight text-washi/70 ${compacta ? "text-sm" : "text-[0.95rem]"}`}>
+        ClassVote
       </span>
     </Link>
   );

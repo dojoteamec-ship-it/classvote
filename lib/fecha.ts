@@ -14,3 +14,9 @@ export function formatearClase(fecha: string, hora: string | null): string {
 export function hoyEnEcuador(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Guayaquil" }).format(new Date());
 }
+
+// Segundos Unix del inicio de la clase. Ecuador no tiene horario de verano:
+// la hora local es siempre UTC-5.
+export function instanteClase(fecha: string, hora: string): number {
+  return Math.floor(new Date(`${fecha}T${hora.slice(0, 5)}:00-05:00`).getTime() / 1000);
+}
