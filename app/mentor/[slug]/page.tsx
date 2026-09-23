@@ -1,14 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Obi } from "@/components/obi";
 import { requerirMentorActivo } from "@/lib/auth";
-import { COLOR_CINTURON } from "@/lib/cinturones";
 import { formatearClase, hoyEnEcuador } from "@/lib/fecha";
 import { COLUMNAS_TEMA_MENTOR } from "@/lib/temas";
 import type { CicloSemanal, Cinturon, Tema } from "@/types/database";
-import { Encabezado } from "../encabezado";
+import { Contenedor } from "../contenedor";
+import { CopiarEnlace } from "./copiar-enlace";
 import { PanelCiclo } from "./panel-ciclo";
 
 const CICLOS_RECIENTES = 8;
+const fechaCorta = (fecha: string) =>
+  new Intl.DateTimeFormat("es-EC", { day: "numeric", month: "short", timeZone: "UTC" }).format(
+    new Date(`${fecha}T12:00:00Z`),
+  );
 
 export default async function PanelCinturonPage({
   params,
@@ -59,52 +64,60 @@ export default async function PanelCinturonPage({
     : { data: null };
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
-      <Encabezado mentor={mentor} />
+    <Contenedor mentor={mentor}>
+      <main className="flex flex-col gap-6">
+        <header className="flex animate-aparecer flex-col gap-4 [animation-delay:80ms]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Obi slug={cinturon.slug} nombre={cinturon.nombre} />
+            <CopiarEnlace ruta={`/votar/${cinturon.slug}`} />
+          </div>
+          {ciclo && (
+            <h1 className="font-serif text-3xl font-bold first-letter:uppercase sm:text-4xl">
+              {formatearClase(ciclo.fecha_clase, cinturon.hora_local)}
+            </h1>
+          )}
+        </header>
 
-      <header className="flex flex-col gap-2">
-        <span className={`w-fit rounded-full px-3 py-1 text-sm font-medium ${COLOR_CINTURON[cinturon.slug] ?? ""}`}>
-          {cinturon.nombre}
-        </span>
-        <p className="text-sm opacity-70">
-          Enlace para alumnos:{" "}
-          <Link href={`/votar/${cinturon.slug}`} className="underline" target="_blank">
-            /votar/{cinturon.slug}
-          </Link>
-        </p>
-      </header>
+        {lista.length > 1 && (
+          <nav
+            aria-label="Clases"
+            className="-mx-1 flex animate-aparecer gap-2 overflow-x-auto px-1 pb-1 [animation-delay:120ms]"
+          >
+            {lista.map((c) => {
+              const actual = c.id === ciclo?.id;
+              return (
+                <Link
+                  key={c.id}
+                  href={`/mentor/${cinturon.slug}?ciclo=${c.id}`}
+                  aria-current={actual ? "page" : undefined}
+                  className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                    actual
+                      ? "border-kin-400/50 bg-kin-400/15 text-kin-300"
+                      : "border-white/10 bg-white/[0.03] text-washi/55 hover:border-white/20 hover:text-washi"
+                  }`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${c.estado === "cerrado" ? "bg-washi/30" : "bg-matcha"}`}
+                  />
+                  {fechaCorta(c.fecha_clase)}
+                  {c.fecha_clase === hoy && <span className="text-[0.6rem] tracking-wider uppercase">hoy</span>}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
 
-      {lista.length > 1 && (
-        <nav className="flex flex-wrap gap-2 text-sm" aria-label="Clases">
-          {lista.map((c) => (
-            <Link
-              key={c.id}
-              href={`/mentor/${cinturon.slug}?ciclo=${c.id}`}
-              aria-current={c.id === ciclo?.id ? "page" : undefined}
-              className={`rounded-md border px-2 py-1 ${
-                c.id === ciclo?.id
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-current/20 hover:bg-current/5"
-              }`}
-            >
-              {c.fecha_clase.slice(5).split("-").reverse().join("/")}
-              {c.estado === "cerrado" ? " · cerrado" : ""}
-            </Link>
-          ))}
-        </nav>
-      )}
-
-      {ciclo ? (
-        <PanelCiclo
-          key={ciclo.id}
-          cicloInicial={ciclo}
-          temasIniciales={temas ?? []}
-          titulo={formatearClase(ciclo.fecha_clase, cinturon.hora_local)}
-          horaClase={cinturon.hora_local}
-        />
-      ) : (
-        <p className="text-sm opacity-70">No hay clases registradas para este cinturón.</p>
-      )}
-    </main>
+        {ciclo ? (
+          <PanelCiclo
+            key={ciclo.id}
+            cicloInicial={ciclo}
+            temasIniciales={temas ?? []}
+            horaClase={cinturon.hora_local}
+          />
+        ) : (
+          <p className="tarjeta p-6 text-sm text-washi/60">No hay clases registradas para este cinturón.</p>
+        )}
+      </main>
+    </Contenedor>
   );
 }

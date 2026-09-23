@@ -2,14 +2,14 @@ import { redirect } from "next/navigation";
 import { obtenerSesion } from "@/lib/auth";
 import { entrar } from "../acciones";
 import { FormularioCuenta } from "../formulario-cuenta";
+import { PantallaAcceso } from "../pantalla-acceso";
 
 export default async function EntrarPage() {
   const { mentor } = await obtenerSesion();
   if (mentor) redirect("/mentor");
 
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-4 px-4 py-8">
-      <h1 className="text-2xl font-semibold">Acceso mentores</h1>
+    <PantallaAcceso titulo="Bienvenido de vuelta">
       <FormularioCuenta
         accion={entrar}
         boton="Entrar"
@@ -19,6 +19,6 @@ export default async function EntrarPage() {
         ]}
         pie={{ texto: "¿Primera vez?", enlace: "Crea tu cuenta", href: "/mentor/registro" }}
       />
-    </main>
+    </PantallaAcceso>
   );
 }

@@ -1,10 +1,24 @@
 import Link from "next/link";
+import { Obi } from "@/components/obi";
+import { Rotulo } from "@/components/rotulo";
 import { requerirMentor } from "@/lib/auth";
-import { COLOR_CINTURON } from "@/lib/cinturones";
+import { obiDe } from "@/lib/cinturones";
 import type { Cinturon } from "@/types/database";
-import { Encabezado } from "./encabezado";
+import { Contenedor } from "./contenedor";
 
-const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+function Aviso({ kanji, titulo, texto }: { kanji: string; titulo: string; texto: string }) {
+  return (
+    <div className="tarjeta flex animate-aparecer items-start gap-5 p-6 [animation-delay:80ms]">
+      <span className="font-serif text-4xl text-kin-400/80">{kanji}</span>
+      <div className="flex flex-col gap-1">
+        <h1 className="font-serif text-xl font-bold">{titulo}</h1>
+        <p className="text-sm leading-relaxed text-washi/60">{texto}</p>
+      </div>
+    </div>
+  );
+}
 
 export default async function MentorPage() {
   const { supabase, mentor } = await requerirMentor();
@@ -24,49 +38,70 @@ export default async function MentorPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
-      <Encabezado mentor={mentor} />
-
+    <Contenedor mentor={mentor}>
       {mentor.estado === "pendiente" && (
-        <p className="rounded-lg border border-current/20 p-4 text-sm">
-          Tu cuenta está pendiente de aprobación. Cuando el administrador la apruebe y te asigne tu
-          cinturón, lo verás aquí.
-        </p>
+        <Aviso
+          kanji="待"
+          titulo="Tu cuenta está pendiente"
+          texto="Cuando el administrador la apruebe y te asigne tu cinturón, lo verás aquí."
+        />
       )}
       {mentor.estado === "inactivo" && (
-        <p className="rounded-lg border border-current/20 p-4 text-sm">
-          Tu cuenta está desactivada. Si crees que es un error, contacta al administrador.
-        </p>
+        <Aviso
+          kanji="休"
+          titulo="Tu cuenta está desactivada"
+          texto="Si crees que es un error, contacta al administrador."
+        />
       )}
 
       {mentor.estado === "activo" && (
-        <section className="flex flex-col gap-3">
-          <h1 className="text-xl font-semibold">Tus cinturones</h1>
+        <main className="flex flex-col gap-6">
+          <div className="flex animate-aparecer flex-col gap-2 [animation-delay:80ms]">
+            <Rotulo kanji="帯">Tus cinturones</Rotulo>
+            <h1 className="font-serif text-3xl font-bold">
+              Hola, <span className="texto-oro">{mentor.nombre.split(" ")[0]}</span>
+            </h1>
+          </div>
+
           {cinturones.length === 0 ? (
-            <p className="text-sm opacity-70">
-              Todavía no tienes cinturones asignados. Pídele al administrador que te asigne uno.
-            </p>
+            <Aviso
+              kanji="空"
+              titulo="Sin cinturones asignados"
+              texto="Pídele al administrador que te asigne uno."
+            />
           ) : (
-            <ul className="flex flex-col gap-2">
-              {cinturones.map((c) => (
-                <li key={c.id}>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {cinturones.map((c, i) => (
+                <li key={c.id} className="animate-aparecer" style={{ animationDelay: `${140 + i * 60}ms` }}>
                   <Link
                     href={`/mentor/${c.slug}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-current/20 p-3 hover:bg-current/5"
+                    className="tarjeta tarjeta-interactiva group flex h-full flex-col gap-6 overflow-hidden p-5"
                   >
-                    <span className={`rounded-full px-3 py-1 text-sm font-medium ${COLOR_CINTURON[c.slug] ?? ""}`}>
-                      {c.nombre}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -right-2 -bottom-6 font-serif text-[7rem] leading-none text-white/[0.035] transition-colors duration-500 group-hover:text-kin-400/[0.07]"
+                    >
+                      {obiDe(c.slug).kanji}
                     </span>
-                    <span className="text-sm opacity-70">
-                      {c.dia_semana !== null ? DIAS[c.dia_semana] : ""} {c.hora_local?.slice(0, 5)}
-                    </span>
+                    <Obi slug={c.slug} nombre={c.nombre} />
+                    <div className="flex items-end justify-between gap-3">
+                      <div className="flex flex-col">
+                        <span className="text-xs tracking-wider text-washi/40 uppercase">Clase Mondo</span>
+                        <span className="font-serif text-lg font-semibold">
+                          {c.dia_semana !== null ? DIAS[c.dia_semana] : ""} · {c.hora_local?.slice(0, 5)}
+                        </span>
+                      </div>
+                      <span className="text-sm text-washi/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-kin-300">
+                        Abrir panel →
+                      </span>
+                    </div>
                   </Link>
                 </li>
               ))}
             </ul>
           )}
-        </section>
+        </main>
       )}
-    </main>
+    </Contenedor>
   );
 }

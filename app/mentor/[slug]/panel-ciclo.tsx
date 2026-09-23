@@ -1,29 +1,36 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { EstadoVotacion, Rotulo } from "@/components/rotulo";
+import { BarraVotos, Contador, Puesto } from "@/components/tema-ui";
 import { createClient } from "@/lib/supabase/client";
 import { ETIQUETA_SESION } from "@/lib/temas";
 import { ordenarTemas, useCicloEnVivo } from "@/lib/use-ciclo-en-vivo";
 import type { CicloSemanal, SesionTipo, Tema } from "@/types/database";
 import { cambiarEstadoCiclo, cambiarOculto, cambiarTipoSesion } from "../acciones";
 
-const OPCIONES_SESION: { valor: SesionTipo | null; etiqueta: string }[] = [
-  { valor: null, etiqueta: "Sin definir" },
-  { valor: "qa", etiqueta: ETIQUETA_SESION.qa },
-  { valor: "practica", etiqueta: ETIQUETA_SESION.practica },
+const OPCIONES_SESION: { valor: SesionTipo | null; etiqueta: string; kanji: string }[] = [
+  { valor: null, etiqueta: "Sin definir", kanji: "未" },
+  { valor: "qa", etiqueta: ETIQUETA_SESION.qa, kanji: "問" },
+  { valor: "practica", etiqueta: ETIQUETA_SESION.practica, kanji: "乱" },
 ];
 
-const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
+function Cifra({ etiqueta, children }: { etiqueta: string; children: React.ReactNode }) {
+  return (
+    <div className="tarjeta flex flex-col gap-1 px-4 py-3">
+      <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-washi/40 uppercase">{etiqueta}</span>
+      <span className="font-serif text-2xl font-bold">{children}</span>
+    </div>
+  );
+}
 
 export function PanelCiclo({
   cicloInicial,
   temasIniciales,
-  titulo,
   horaClase,
 }: {
   cicloInicial: CicloSemanal;
   temasIniciales: Tema[];
-  titulo: string;
   horaClase: string | null;
 }) {
   const [supabase] = useState(createClient);
@@ -33,8 +40,9 @@ export function PanelCiclo({
   const [error, setError] = useState<string | null>(null);
   const ordenados = useMemo(() => [...temas].sort(ordenarTemas), [temas]);
   const cerrado = ciclo.estado === "cerrado";
-  const totalVotos = temas.reduce((suma, t) => suma + (t.oculto ? 0 : t.votos_count), 0);
-  const visibles = temas.filter((t) => !t.oculto).length;
+  const visibles = temas.filter((t) => !t.oculto);
+  const totalVotos = visibles.reduce((suma, t) => suma + t.votos_count, 0);
+  const maximo = Math.max(0, ...visibles.map((t) => t.votos_count));
 
   // Cambio optimista: se aplica al instante y se revierte si la base lo rechaza.
   async function guardar(aplicar: () => void, revertir: () => void, accion: Promise<{ error?: string }>) {
@@ -81,106 +89,124 @@ export function PanelCiclo({
     );
   }
 
-  return (
-    <section className="flex flex-col gap-5">
-      <div className="flex flex-col gap-3 rounded-lg border border-current/20 p-4">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h1 className="text-lg font-semibold first-letter:uppercase">{titulo}</h1>
-          <span
-            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-              cerrado ? "bg-current/10" : "bg-green-600 text-white"
-            }`}
-          >
-            {cerrado ? "Votación cerrada" : "Votación abierta"}
-          </span>
-        </div>
+  const cierre = cerrado ? "Cerrada" : ciclo.reabierto ? "Manual" : (horaClase?.slice(0, 5) ?? "—");
 
-        <div className="flex flex-col gap-1 text-sm">
-          <span className="font-medium">Tipo de sesión</span>
-          <div className="flex flex-wrap gap-2">
-            {OPCIONES_SESION.map((op) => (
-              <button
-                key={op.etiqueta}
-                type="button"
-                onClick={() => elegirTipo(op.valor)}
-                aria-pressed={ciclo.tipo_sesion === op.valor}
-                className={`rounded-md border px-3 py-1 ${
-                  ciclo.tipo_sesion === op.valor
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-current/20 hover:bg-current/5"
-                }`}
-              >
-                {op.etiqueta}
-              </button>
-            ))}
+  return (
+    <div className="flex flex-col gap-6">
+      <section className="grid animate-aparecer grid-cols-2 gap-3 [animation-delay:160ms] sm:grid-cols-4">
+        <Cifra etiqueta="Temas">
+          <Contador valor={visibles.length} />
+        </Cifra>
+        <Cifra etiqueta="Votos">
+          <Contador valor={totalVotos} className="texto-oro" />
+        </Cifra>
+        <Cifra etiqueta="Cierre">{cierre}</Cifra>
+        <div className="tarjeta flex flex-col justify-center gap-2 px-4 py-3">
+          <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-washi/40 uppercase">En vivo</span>
+          <EstadoVotacion abierta={!cerrado} />
+        </div>
+      </section>
+
+      <section className="tarjeta flex animate-aparecer flex-col gap-5 p-5 [animation-delay:220ms] sm:p-6">
+        <div className="flex flex-col gap-3">
+          <Rotulo kanji="稽古">Tipo de sesión</Rotulo>
+          <div role="radiogroup" aria-label="Tipo de sesión" className="grid gap-2 sm:grid-cols-3">
+            {OPCIONES_SESION.map((op) => {
+              const activo = ciclo.tipo_sesion === op.valor;
+              return (
+                <button
+                  key={op.etiqueta}
+                  type="button"
+                  role="radio"
+                  aria-checked={activo}
+                  onClick={() => elegirTipo(op.valor)}
+                  className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition-all duration-300 ${
+                    activo
+                      ? "border-kin-400/60 bg-kin-400/12 text-washi shadow-[0_0_0_4px_rgba(212,179,115,0.08)]"
+                      : "border-white/10 bg-white/[0.03] text-washi/60 hover:border-white/20 hover:text-washi"
+                  }`}
+                >
+                  <span className={`font-serif text-xl ${activo ? "text-kin-300" : "text-washi/30"}`}>
+                    {op.kanji}
+                  </span>
+                  {op.etiqueta}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <button
-            type="button"
-            onClick={alternarEstado}
-            className="w-fit rounded-md border border-current/30 px-3 py-1 text-sm hover:bg-current/5"
-          >
-            {cerrado ? "Reabrir votación" : "Cerrar votación ahora"}
-          </button>
-          {!cerrado && (
-            <span className="text-xs opacity-60">
-              {ciclo.reabierto
+        <div className="flex flex-col gap-2 border-t border-white/5 pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-washi/45">
+            {cerrado
+              ? "Los alumnos ya no pueden proponer ni votar."
+              : ciclo.reabierto
                 ? "Reabierta manualmente: no se cerrará sola, ciérrala cuando termines."
                 : horaClase
                   ? `Se cierra sola a las ${horaClase.slice(0, 5)} del día de la clase.`
                   : null}
-            </span>
-          )}
+          </p>
+          <button
+            type="button"
+            onClick={alternarEstado}
+            className={cerrado ? "boton-secundario" : "boton-secundario hover:!border-shu-500/50 hover:!text-shu-400"}
+          >
+            {cerrado ? "Reabrir votación" : "Cerrar votación ahora"}
+          </button>
         </div>
 
         {error && (
-          <p role="alert" className="text-sm text-red-600">
+          <p role="alert" className="rounded-xl border border-shu-500/30 bg-shu-500/10 px-4 py-3 text-sm text-shu-400">
             {error}
           </p>
         )}
-      </div>
+      </section>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold">Temas</h2>
-          <span className="text-xs opacity-60">
-            {plural(visibles, "tema", "temas")} · {plural(totalVotos, "voto", "votos")} · en vivo
-          </span>
-        </div>
+      <section className="flex animate-aparecer flex-col gap-4 [animation-delay:280ms]">
+        <Rotulo kanji="題目">Temas por votos</Rotulo>
 
         {ordenados.length === 0 ? (
-          <p className="text-sm opacity-70">Los alumnos todavía no han propuesto temas.</p>
+          <div className="tarjeta flex flex-col items-center gap-2 px-6 py-10 text-center">
+            <span className="font-serif text-3xl text-washi/20">空</span>
+            <p className="text-sm text-washi/55">Los alumnos todavía no han propuesto temas.</p>
+          </div>
         ) : (
-          <ol className="flex flex-col gap-2">
-            {ordenados.map((tema) => (
+          <ol className="flex flex-col gap-3">
+            {ordenados.map((tema, indice) => (
               <li
                 key={tema.id}
-                className={`flex items-center gap-3 rounded-lg border border-current/20 p-3 ${
-                  tema.oculto ? "opacity-50" : ""
+                className={`tarjeta flex animate-aparecer items-center gap-4 p-4 transition-opacity duration-300 ${
+                  tema.oculto ? "opacity-45" : ""
                 }`}
+                style={{ animationDelay: `${320 + Math.min(indice, 8) * 50}ms` }}
               >
-                <span className="min-w-10 text-center text-lg font-semibold">{tema.votos_count}</span>
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <span className={`break-words ${tema.oculto ? "line-through" : ""}`}>{tema.texto}</span>
-                  <span className="text-xs opacity-60">
+                <Puesto indice={indice} activo={!tema.oculto && tema.votos_count > 0} />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <span className={`leading-snug break-words ${tema.oculto ? "line-through" : ""}`}>
+                    {tema.texto}
+                  </span>
+                  <span className="text-xs text-washi/40">
                     {tema.alumno_alias || "Anónimo"}
                     {tema.oculto ? " · oculto para los alumnos" : ""}
                   </span>
+                  {!tema.oculto && <BarraVotos votos={tema.votos_count} maximo={maximo} />}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => alternarOculto(tema)}
-                  className="rounded-md border border-current/20 px-2 py-1 text-xs hover:bg-current/5"
-                >
-                  {tema.oculto ? "Mostrar" : "Ocultar"}
-                </button>
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <span className="flex items-baseline gap-1">
+                    <Contador valor={tema.votos_count} className="font-serif text-2xl font-bold" />
+                    <span className="text-[0.65rem] text-washi/40 uppercase">
+                      {tema.votos_count === 1 ? "voto" : "votos"}
+                    </span>
+                  </span>
+                  <button type="button" onClick={() => alternarOculto(tema)} className="boton-secundario py-1 text-xs">
+                    {tema.oculto ? "Mostrar" : "Ocultar"}
+                  </button>
+                </div>
               </li>
             ))}
           </ol>
         )}
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
